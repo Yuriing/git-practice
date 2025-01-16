@@ -1,0 +1,129 @@
+// Initialize the timer display
+const timerDisplay = GUI.getObject("pop_board_01(459)");
+let timeRemaining = 60; // 3 minutes in seconds
+
+function Start() {
+    // Update the timer every second
+    const timerInterval = setInterval(() => {
+        if (timeRemaining > 0) {
+            timeRemaining--;
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            timerDisplay.setText(`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`);
+        } else {
+            clearInterval(timerInterval);
+            stopGame(); // Call the function to stop the game
+        }
+    }, 1000);
+}
+
+// Function to stop the game
+function stopGame() {
+    // Implement game stop logic here
+    // For example, you might want to pause the player and show an end screen
+    PLAYER.changePlayerSpeed(0); // Stop player movement
+    showEndMessage(); // Display end message
+}
+
+// Function to display the end message
+function showEndMessage() {
+    const endMessage = GUI.getObject("pop_board_01(459)");
+    endMessage.setText("Good Job!");
+    endMessage.setPosition(0.5, 0.5); // Center the text on the screen
+    endMessage.show();
+}
+
+
+
+
+
+
+const coin1 = WORLD.getObject("decoration_goldcoin_002(2f9)")
+const coin2 = WORLD.getObject("decoration_goldcoin_002(4b6)")
+const coin3 = WORLD.getObject("decoration_goldcoin_002(a96)")
+const coin4 = WORLD.getObject("decoration_goldcoin_002(b58)")
+const coin5 = WORLD.getObject("decoration_goldcoin_002(2f2)")
+
+const endMessage = GUI.getObject("button_text_large_blue_null(93e)");
+
+const scoreDisplay = GUI.getObject("flat_a_button_w(8b2)");
+let score = 0;
+let timer;
+scoreDisplay.setText(score);
+
+function Start() {
+    coin1.onCollide(PLAYER, () => handleCoinCollision(coin1));
+    coin2.onCollide(PLAYER, () => handleCoinCollision(coin2));
+    coin3.onCollide(PLAYER, () => handleCoinCollision(coin3));
+    coin4.onCollide(PLAYER, () => handleCoinCollision(coin4));
+    coin5.onCollide(PLAYER, () => handleCoinCollision(coin5));
+
+}
+
+function handleCoinCollision(coin) {
+    coin.kill(); // Remove the coin from the scene
+    score += 1; // Increase score
+    scoreDisplay.setText(score); // Update score display
+
+    // Check if score reaches 5
+    if (score === 5) {
+        clearTimeout(timer);
+        stopGame();
+    }
+}
+
+// Function to stop the game
+function stopGame() {
+    PLAYER.changePlayerSpeed(0); // Set player speed to 0
+    // Additional logic to stop the game can be added here
+    showEndMessage(); // Display end message
+}
+
+// Function to display the end message
+function showEndMessage() {
+    endMessage.setText("Good Job!");
+    endMessage.show();
+}
+
+function Update(dt) {
+	
+}
+
+
+
+
+
+let score = 0; // 초기 점수
+let timer; // 타이머 변수
+
+// 점수를 업데이트하는 함수
+function updateScore(newScore) {
+    score = newScore;
+    if (score > 10000) {
+        displayMessage("Game Over");
+    } else if (score === 10000) {
+        displayMessage("Good Job!");
+    }
+}
+
+// 메시지를 표시하는 함수
+function displayMessage(message) {
+    // 기존 메시지 제거
+    const existingMessage = document.getElementById('gameMessage');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+
+    // 새로운 메시지 생성 및 표시
+    const messageElement = document.createElement('div');
+    messageElement.id = 'gameMessage';
+    messageElement.innerText = message;
+    messageElement.style.fontSize = "24px"; // 폰트 크기 설정
+    messageElement.style.color = "red"; // 텍스트 색상 설정
+    document.body.appendChild(messageElement); // 메시지를 화면에 추가
+}
+
+// 게임 시작 시 타이머 설정
+timer = setTimeout(() => {
+    displayMessage("Time Out");
+}, 10 * 1000); // 10초를 밀리초로 변환
